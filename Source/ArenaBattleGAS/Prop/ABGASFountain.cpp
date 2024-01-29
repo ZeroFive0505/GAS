@@ -5,7 +5,6 @@
 
 #include "AbilitySystemComponent.h"
 #include "ArenaBattleGAS.h"
-// #include "GA/ABGA_Rotate.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include "Tag/ABGameplayTag.h"
 
@@ -59,30 +58,4 @@ void AABGASFountain::TimerAction()
 	{
 		AbilitySystemComponent->CancelAbilities(&TargetTag);
 	}
-	
-	// FGameplayAbilitySpec* RotateGASpec = AbilitySystemComponent->FindAbilitySpecFromClass(UABGA_Rotate::StaticClass());
-	//
-	// if(!RotateGASpec)
-	// {
-	// 	ABGAS_LOG(LogABGAS, Error, TEXT("No Rotate Spec Found!"));
-	// 	return;
-	// }
-	//
-	// if(!RotateGASpec->IsActive())
-	// {
-	// 	AbilitySystemComponent->TryActivateAbility(RotateGASpec->Handle);
-	// }
-	// else
-	// {
-	// 	AbilitySystemComponent->CancelAbilityHandle(RotateGASpec->Handle);
-	// }
-	
-	// if(!RotatingMovementComponent->IsActive())
-	// {
-	// 	RotatingMovementComponent->Activate(true);
-	// }
-	// else
-	// {
-	// 	RotatingMovementComponent->Deactivate();
-	// }
 }
