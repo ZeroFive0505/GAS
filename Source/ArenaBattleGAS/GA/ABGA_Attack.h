@@ -6,6 +6,7 @@
 #include "Abilities/GameplayAbility.h"
 #include "ABGA_Attack.generated.h"
 
+class UABComboActionData;
 /**
  * 
  */
@@ -32,4 +33,16 @@ protected:
 
 	UFUNCTION()
 	void OnInterruptedCallback();
+
+	FName GetNextSection();
+	void StartComboTimer();
+	void CheckComboInput();
+
+protected:
+	UPROPERTY()
+	TObjectPtr<UABComboActionData> CurrentComboData;
+
+	uint8 CurrentCombo = 0;
+	FTimerHandle ComboTimerHandle;
+	bool HasNextComboInput = false;
 };
