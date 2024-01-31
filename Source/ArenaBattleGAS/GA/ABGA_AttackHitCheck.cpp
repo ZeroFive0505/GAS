@@ -4,8 +4,10 @@
 #include "GA/ABGA_AttackHitCheck.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "ArenaBattleGAS.h"
 #include "AT/ABAT_Trace.h"
+#include "Attribute/ABCharacterAttributeSet.h"
 #include "TA/ABTA_Trace.h"
 
 UABGA_AttackHitCheck::UABGA_AttackHitCheck()
@@ -32,6 +34,26 @@ void UABGA_AttackHitCheck::OnTraceResultCallback(const FGameplayAbilityTargetDat
 		FHitResult HitResult = UAbilitySystemBlueprintLibrary::GetHitResultFromTargetData(TargetDataHandle, 0);
 
 		ABGAS_LOG(LogABGAS, Log, TEXT("Target %s Detected"), *(HitResult.GetActor()->GetName()));
+
+		UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo_Checked();
+		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitResult.GetActor());
+
+		if(!SourceASC || !TargetASC)
+		{
+			ABGAS_LOG(LogABGAS, Error, TEXT("ASC not Found!"));
+			return;
+		}
+
+		const UABCharacterAttributeSet* SourceAttributeSet = SourceASC->GetSet<UABCharacterAttributeSet>();
+		UABCharacterAttributeSet* TargetAttributeSet = const_cast<UABCharacterAttributeSet*>(TargetASC->GetSet<UABCharacterAttributeSet>());
+		if(!SourceAttributeSet || !TargetAttributeSet)
+		{
+			ABGAS_LOG(LogABGAS, Error, TEXT("ASC not Found!"));
+			return;
+		}
+
+		const float AttackDamage = SourceAttributeSet->GetAttackRate();
+		TargetAttributeSet->SetHealth(TargetAttributeSet->GetHealth() - AttackDamage);
 	}
 	
 	bool bReplicatedEndAbility = true;
