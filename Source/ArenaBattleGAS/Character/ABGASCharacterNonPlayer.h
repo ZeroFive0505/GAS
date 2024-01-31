@@ -9,6 +9,7 @@
 
 class UGameplayEffect;
 class UABCharacterAttributeSet;
+class UABGASWidgetComponent;
 /**
  * 
  */
@@ -23,6 +24,9 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	UFUNCTION()
+	virtual void OnOutOfHealth();
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -35,4 +39,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	float Level = 1.0f;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UABGASWidgetComponent> HpBar;
 };
