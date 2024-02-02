@@ -32,6 +32,9 @@ protected:
 	UFUNCTION()
 	virtual void OnOutOfHealth();
 
+	void EquipWeapon(const FGameplayEventData* EventData);
+	void UnEquipWeapon(const FGameplayEventData* EventData);
+
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
@@ -44,4 +47,13 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UABGASWidgetComponent> HpBar;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TObjectPtr<USkeletalMesh> WeaponMesh;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	float WeaponRange;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	float WeaponAttackRate;
 };
