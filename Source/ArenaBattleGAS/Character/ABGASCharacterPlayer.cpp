@@ -43,6 +43,13 @@ AABGASCharacterPlayer::AABGASCharacterPlayer()
 
 	WeaponRange = 75.0f;
 	WeaponAttackRate = 100.0f;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SkillActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_SkillAttack.AM_SkillAttack'"));
+
+	if(SkillActionMontageRef.Object)
+	{
+		SkillActionMontage = SkillActionMontageRef.Object;
+	}
 }
 
 UAbilitySystemComponent* AABGASCharacterPlayer::GetAbilitySystemComponent() const
@@ -106,6 +113,7 @@ void AABGASCharacterPlayer::SetUpGASInputComponent()
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AABGASCharacterPlayer::GASInputPressed, 0);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AABGASCharacterPlayer::GASInputPressed, 1);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AABGASCharacterPlayer::GASInputReleased, 0);
+		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &AABGASCharacterPlayer::GASInputPressed, 2);
 	}
 }
 
@@ -158,6 +166,14 @@ void AABGASCharacterPlayer::EquipWeapon(const FGameplayEventData* EventData)
 	{
 		Weapon->SetSkeletalMesh(WeaponMesh);
 
+		FGameplayAbilitySpec NewSKillSpec(SkillAbilityClass);
+		NewSKillSpec.InputID = 2;
+
+		if(!AbilitySystemComponent->FindAbilitySpecFromClass(SkillAbilityClass))
+		{
+			AbilitySystemComponent->GiveAbility(NewSKillSpec);
+		}
+
 		const float CurrentAttackRange = AbilitySystemComponent->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute());
 		const float CurrentAttackRate = AbilitySystemComponent->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute());
 
@@ -177,5 +193,12 @@ void AABGASCharacterPlayer::UnEquipWeapon(const FGameplayEventData* EventData)
 
 		AbilitySystemComponent->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute(), CurrentAttackRange - WeaponRange);
 		AbilitySystemComponent->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute(), CurrentAttackRate - WeaponAttackRate);
+
+		FGameplayAbilitySpec* SkillAbilitySpec = AbilitySystemComponent->FindAbilitySpecFromClass(SkillAbilityClass);
+
+		if(SkillAbilitySpec)
+		{
+			AbilitySystemComponent->ClearAbility(SkillAbilitySpec->Handle);
+		}
 	}
 }

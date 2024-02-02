@@ -23,7 +23,7 @@ protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (Categories = "Event"))
 	FGameplayTag TriggerGameplayTag;
 
 	UPROPERTY(EditAnywhere)

@@ -19,6 +19,7 @@ class ARENABATTLEGAS_API AABGASCharacterPlayer : public AABCharacterPlayer, publ
 
 public:
 	AABGASCharacterPlayer();
+	FORCEINLINE virtual class UAnimMontage* GetSkillActionMontage() const { return SkillActionMontage; }
 	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -56,4 +57,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	float WeaponAttackRate;
+
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TSubclassOf<UGameplayAbility> SkillAbilityClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	TObjectPtr<UAnimMontage> SkillActionMontage;
 };

@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "ABGASPlayerState.generated.h"
 
+class UABCharacterSkillAttributeSet;
 class UABCharacterAttributeSet;
 /**
  * 
@@ -27,4 +28,7 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UABCharacterAttributeSet> AttributeSet;
+
+	UPROPERTY()
+	TObjectPtr<UABCharacterSkillAttributeSet> SkillAttributeSet;
 };
