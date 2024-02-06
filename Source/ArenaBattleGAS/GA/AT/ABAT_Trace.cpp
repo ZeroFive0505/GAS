@@ -2,9 +2,8 @@
 
 
 #include "GA/AT/ABAT_Trace.h"
-
-#include "AbilitySystemComponent.h"
 #include "GA/TA/ABTA_Trace.h"
+#include "AbilitySystemComponent.h"
 
 UABAT_Trace::UABAT_Trace()
 {
@@ -21,27 +20,26 @@ void UABAT_Trace::Activate()
 {
 	Super::Activate();
 
-	SpawnInitializeTargetActor();
+	SpawnAndInitializeTargetActor();
 	FinalizeTargetActor();
-	
+
 	SetWaitingOnAvatar();
 }
 
-void UABAT_Trace::OnDestroy(bool bInOwnerFinished)
+void UABAT_Trace::OnDestroy(bool AbilityEnded)
 {
-	if(SpawnedTargetActor)
+	if (SpawnedTargetActor)
 	{
 		SpawnedTargetActor->Destroy();
 	}
-	
-	Super::OnDestroy(bInOwnerFinished);
+
+	Super::OnDestroy(AbilityEnded);
 }
 
-void UABAT_Trace::SpawnInitializeTargetActor()
+void UABAT_Trace::SpawnAndInitializeTargetActor()
 {
 	SpawnedTargetActor = Cast<AABTA_Trace>(Ability->GetWorld()->SpawnActorDeferred<AGameplayAbilityTargetActor>(TargetActorClass, FTransform::Identity, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn));
-
-	if(SpawnedTargetActor)
+	if (SpawnedTargetActor)
 	{
 		SpawnedTargetActor->SetShowDebug(true);
 		SpawnedTargetActor->TargetDataReadyDelegate.AddUObject(this, &UABAT_Trace::OnTargetDataReadyCallback);
@@ -51,8 +49,7 @@ void UABAT_Trace::SpawnInitializeTargetActor()
 void UABAT_Trace::FinalizeTargetActor()
 {
 	UAbilitySystemComponent* ASC = AbilitySystemComponent.Get();
-
-	if(ASC)
+	if (ASC)
 	{
 		const FTransform SpawnTransform = ASC->GetAvatarActor()->GetTransform();
 		SpawnedTargetActor->FinishSpawning(SpawnTransform);
@@ -65,7 +62,7 @@ void UABAT_Trace::FinalizeTargetActor()
 
 void UABAT_Trace::OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& DataHandle)
 {
-	if(ShouldBroadcastAbilityTaskDelegates())
+	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		OnComplete.Broadcast(DataHandle);
 	}

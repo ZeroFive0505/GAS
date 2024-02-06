@@ -5,22 +5,20 @@
 #include "CoreMinimal.h"
 #include "Prop/ABFountain.h"
 #include "AbilitySystemInterface.h"
-#include "Abilities/GameplayAbility.h"
 #include "ABGASFountain.generated.h"
 
 /**
  * 
  */
-class URotatingMovementComponent;
 UCLASS()
 class ARENABATTLEGAS_API AABGASFountain : public AABFountain, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-
+	
 public:
 	AABGASFountain();
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
 	virtual void PostInitializeComponents() override;
@@ -29,16 +27,17 @@ protected:
 	virtual void TimerAction();
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Movement")
-	TObjectPtr<URotatingMovementComponent> RotatingMovementComponent;
-
-	UPROPERTY(EditAnywhere, Category = "Timer")
+	UPROPERTY(VisibleAnywhere, Category=Movement)
+	TObjectPtr<class URotatingMovementComponent> RotatingMovement;
+	
+	UPROPERTY(EditAnywhere, Category=Timer)
 	float ActionPeriod;
-	
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TArray<TSubclassOf<UGameplayAbility>> StartAbilities;
-	
+	UPROPERTY(EditAnywhere, Category=GAS)
+	TObjectPtr<class UAbilitySystemComponent> ASC;
+
+	UPROPERTY(EditAnywhere, Category=GAS)
+	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
+
 	FTimerHandle ActionTimer;
 };

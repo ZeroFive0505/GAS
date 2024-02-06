@@ -5,10 +5,9 @@
 #include "CoreMinimal.h"
 #include "Character/ABCharacterPlayer.h"
 #include "AbilitySystemInterface.h"
-#include "Abilities/GameplayAbility.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "ABGASCharacterPlayer.generated.h"
 
-class UABGASWidgetComponent;
 /**
  * 
  */
@@ -16,51 +15,51 @@ UCLASS()
 class ARENABATTLEGAS_API AABGASCharacterPlayer : public AABCharacterPlayer, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-
+	
 public:
 	AABGASCharacterPlayer();
 	FORCEINLINE virtual class UAnimMontage* GetSkillActionMontage() const { return SkillActionMontage; }
-	
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void PossessedBy(AController* NewController) override;
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	void SetUpGASInputComponent();
-	void GASInputPressed(int32 InputID);
-	void GASInputReleased(int32 InputID);
+	void SetupGASInputComponent();
+	void GASInputPressed(int32 InputId);
+	void GASInputReleased(int32 InputId);
 
 	UFUNCTION()
 	virtual void OnOutOfHealth();
 
 	void EquipWeapon(const FGameplayEventData* EventData);
-	void UnEquipWeapon(const FGameplayEventData* EventData);
+	void UnequipWeapon(const FGameplayEventData* EventData);
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TObjectPtr<class UAbilitySystemComponent> ASC;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TArray<TSubclassOf<UGameplayAbility>> StartAbilities;
-
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TMap<int32, TSubclassOf<UGameplayAbility>> StartInputAbilities;
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TArray<TSubclassOf<class UGameplayAbility>> StartAbilities;
+	
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TMap<int32, TSubclassOf<class UGameplayAbility>> StartInputAbilities;
 
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UABGASWidgetComponent> HpBar;
+	TObjectPtr<class UABGASWidgetComponent> HpBar;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-	TObjectPtr<USkeletalMesh> WeaponMesh;
+	UPROPERTY(EditAnywhere, Category = Weapon)
+	TObjectPtr<class USkeletalMesh> WeaponMesh;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(EditAnywhere, Category = Weapon)
 	float WeaponRange;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(EditAnywhere, Category = Weapon)
 	float WeaponAttackRate;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<UGameplayAbility> SkillAbilityClass;
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TSubclassOf<class UGameplayAbility> SkillAbilityClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-	TObjectPtr<UAnimMontage> SkillActionMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animation)
+	TObjectPtr<class UAnimMontage> SkillActionMontage;
 };

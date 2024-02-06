@@ -8,20 +8,16 @@
 #include "GameplayTagContainer.h"
 #include "ABGASItemBox.generated.h"
 
-class UGameplayEffect;
-class UBoxComponent;
-
 UCLASS()
 class ARENABATTLEGAS_API AABGASItemBox : public AActor, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AABGASItemBox();
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual void NotifyActorBeginOverlap(class AActor* Other) override;
 
 protected:
 	virtual void PostInitializeComponents() override;
@@ -31,17 +27,17 @@ protected:
 
 protected:
 	UPROPERTY()
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	TObjectPtr<class UAbilitySystemComponent> ASC;
 
-	UPROPERTY(VisibleAnywhere, Category = "Box")
-	TObjectPtr<UBoxComponent> Trigger;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Box")
-	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY(VisibleAnywhere, Category=Box)
+	TObjectPtr<class UBoxComponent> Trigger;
 
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TSubclassOf<UGameplayEffect> GameplayEffectClass;
+	UPROPERTY(VisibleAnywhere, Category = Box)
+	TObjectPtr<class UStaticMeshComponent> Mesh;
 
-	UPROPERTY(EditAnywhere, Category = "GAS", meta = (Categories = GameplayCue))
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TSubclassOf<class UGameplayEffect> GameplayEffectClass;
+
+	UPROPERTY(EditAnywhere, Category = GAS, Meta=(Categories=GameplayCue))
 	FGameplayTag GameplayCueTag;
 };

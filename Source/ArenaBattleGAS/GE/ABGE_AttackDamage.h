@@ -13,7 +13,8 @@ UCLASS()
 class ARENABATTLEGAS_API UABGE_AttackDamage : public UGameplayEffect
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABGE_AttackDamage();
+	
 };

@@ -7,8 +7,6 @@
 #include "AbilitySystemInterface.h"
 #include "ABGASPlayerState.generated.h"
 
-class UABCharacterSkillAttributeSet;
-class UABCharacterAttributeSet;
 /**
  * 
  */
@@ -16,19 +14,19 @@ UCLASS()
 class ARENABATTLEGAS_API AABGASPlayerState : public APlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
-
+	
 public:
 	AABGASPlayerState();
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "GAS")
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
+	UPROPERTY(EditAnywhere, Category = GAS)
+	TObjectPtr<class UAbilitySystemComponent> ASC;
 
 	UPROPERTY()
-	TObjectPtr<UABCharacterAttributeSet> AttributeSet;
+	TObjectPtr<class UABCharacterAttributeSet> AttributeSet;
 
 	UPROPERTY()
-	TObjectPtr<UABCharacterSkillAttributeSet> SkillAttributeSet;
+	TObjectPtr<class UABCharacterSkillAttributeSet> SkillAttributeSet;
 };

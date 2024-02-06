@@ -6,9 +6,7 @@
 #include "Abilities/Tasks/AbilityTask.h"
 #include "ABAT_Trace.generated.h"
 
-class AABTA_Trace;
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTraceResultDelegate, const FGameplayAbilityTargetDataHandle&,
-                                            TargetDataHandle);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTraceResultDelegate, const FGameplayAbilityTargetDataHandle&, TargetDataHandle);
 
 /**
  * 
@@ -17,17 +15,16 @@ UCLASS()
 class ARENABATTLEGAS_API UABAT_Trace : public UAbilityTask
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABAT_Trace();
 
 	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (DisplayName = "WaitForTrace", HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-	static UABAT_Trace* CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<AABTA_Trace> TargetActorClass);
-
+	static UABAT_Trace* CreateTask(UGameplayAbility* OwningAbility, TSubclassOf<class AABTA_Trace> TargetActorClass);
 	virtual void Activate() override;
-	virtual void OnDestroy(bool bInOwnerFinished) override;
+	virtual void OnDestroy(bool AbilityEnded) override;
 
-	void SpawnInitializeTargetActor();
+	void SpawnAndInitializeTargetActor();
 	void FinalizeTargetActor();
 
 protected:
@@ -39,8 +36,8 @@ public:
 
 protected:
 	UPROPERTY()
-	TSubclassOf<AABTA_Trace> TargetActorClass;
+	TSubclassOf<class AABTA_Trace> TargetActorClass;
 
 	UPROPERTY()
-	TObjectPtr<AABTA_Trace> SpawnedTargetActor;
+	TObjectPtr<class AABTA_Trace> SpawnedTargetActor;
 };

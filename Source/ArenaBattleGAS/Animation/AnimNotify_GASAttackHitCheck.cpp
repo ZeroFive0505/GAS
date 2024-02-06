@@ -2,7 +2,6 @@
 
 
 #include "Animation/AnimNotify_GASAttackHitCheck.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 
 UAnimNotify_GASAttackHitCheck::UAnimNotify_GASAttackHitCheck()
@@ -15,16 +14,14 @@ FString UAnimNotify_GASAttackHitCheck::GetNotifyName_Implementation() const
 	return TEXT("GASAttackHitCheck");
 }
 
-void UAnimNotify_GASAttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-	const FAnimNotifyEventReference& EventReference)
+void UAnimNotify_GASAttackHitCheck::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
-	if(MeshComp)
+	if (MeshComp)
 	{
 		AActor* OwnerActor = MeshComp->GetOwner();
-
-		if(OwnerActor)
+		if (OwnerActor)
 		{
 			FGameplayEventData PayloadData;
 			PayloadData.EventMagnitude = ComboAttackLevel;

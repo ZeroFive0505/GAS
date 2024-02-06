@@ -2,38 +2,38 @@
 
 
 #include "Prop/ABGASFountain.h"
-
-#include "AbilitySystemComponent.h"
-#include "ArenaBattleGAS.h"
 #include "GameFramework/RotatingMovementComponent.h"
+#include "ArenaBattleGAS.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayAbilitySpec.h"
 #include "Tag/ABGameplayTag.h"
+#include "Abilities/GameplayAbility.h"
 
 AABGASFountain::AABGASFountain()
 {
-	RotatingMovementComponent = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotateMovement"));
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
+	ASC = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("ASC"));
+	RotatingMovement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotateMovement"));
 	ActionPeriod = 3.0f;
 }
 
 UAbilitySystemComponent* AABGASFountain::GetAbilitySystemComponent() const
 {
-	return AbilitySystemComponent;
+	return ASC;
 }
 
 void AABGASFountain::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	RotatingMovementComponent->bAutoActivate =false;
-	RotatingMovementComponent->Deactivate();
+	RotatingMovement->bAutoActivate = false;
+	RotatingMovement->Deactivate();
 
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	ASC->InitAbilityActorInfo(this, this);
 
-
-	for(const auto& StartAbility : StartAbilities)
+	for (const auto& StartAbility : StartAbilities)
 	{
-		FGameplayAbilitySpec AbilitySpec(StartAbility);
-		AbilitySystemComponent->GiveAbility(AbilitySpec);
+		FGameplayAbilitySpec StartSpec(StartAbility);
+		ASC->GiveAbility(StartSpec);
 	}
 }
 
@@ -50,12 +50,13 @@ void AABGASFountain::TimerAction()
 
 	FGameplayTagContainer TargetTag(ABTAG_ACTOR_ROTATE);
 
-	if(!AbilitySystemComponent->HasMatchingGameplayTag(ABTAG_ACTOR_ISROTATING))
+	if(!ASC->HasMatchingGameplayTag(ABTAG_ACTOR_ISROTATING))
 	{
-		AbilitySystemComponent->TryActivateAbilitiesByTag(TargetTag);
+		ASC->TryActivateAbilitiesByTag(TargetTag);
 	}
 	else
 	{
-		AbilitySystemComponent->CancelAbilities(&TargetTag);
+		ASC->CancelAbilities(&TargetTag);
 	}
+
 }

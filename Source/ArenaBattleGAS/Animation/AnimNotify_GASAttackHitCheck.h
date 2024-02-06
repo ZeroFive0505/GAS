@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
+#include "GameplayTagContainer.h"
 #include "AnimNotify_GASAttackHitCheck.generated.h"
 
 /**
@@ -14,7 +14,7 @@ UCLASS()
 class ARENABATTLEGAS_API UAnimNotify_GASAttackHitCheck : public UAnimNotify
 {
 	GENERATED_BODY()
-
+	
 public:
 	UAnimNotify_GASAttackHitCheck();
 
@@ -23,7 +23,7 @@ protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 
 protected:
-	UPROPERTY(EditAnywhere, meta = (Categories = "Event"))
+	UPROPERTY(EditAnywhere, Meta=(Categories=Event))
 	FGameplayTag TriggerGameplayTag;
 
 	UPROPERTY(EditAnywhere)

@@ -13,7 +13,7 @@ UCLASS()
 class ARENABATTLEGAS_API UABGA_Skill : public UGameplayAbility
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABGA_Skill();
 
@@ -26,9 +26,9 @@ protected:
 	void OnCompleteCallback();
 
 	UFUNCTION()
-	void OnInterruptCallback();
+	void OnInterruptedCallback();
 
 protected:
 	UPROPERTY()
-	TObjectPtr<UAnimMontage> ActiveSkillActionMontage;
+	TObjectPtr<class UAnimMontage> ActiveSkillActionMontage;
 };

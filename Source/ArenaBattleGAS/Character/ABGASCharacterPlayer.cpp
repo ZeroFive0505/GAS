@@ -2,19 +2,19 @@
 
 
 #include "Character/ABGASCharacterPlayer.h"
-
 #include "AbilitySystemComponent.h"
-#include "EnhancedInputComponent.h"
-#include "Attribute/ABCharacterAttributeSet.h"
 #include "Player/ABGASPlayerState.h"
-#include "Tag/ABGameplayTag.h"
+#include "EnhancedInputComponent.h"
 #include "UI/ABGASWidgetComponent.h"
+#include "UI/ABGASUserWidget.h"
+#include "Attribute/ABCharacterAttributeSet.h"
+#include "Tag/ABGameplayTag.h"
 
 AABGASCharacterPlayer::AABGASCharacterPlayer()
 {
-	AbilitySystemComponent = nullptr;
+	ASC = nullptr;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_ComboAttack.AM_ComboAttack'"));
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> ComboActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattleGAS/Animation/AM_ComboAttack.AM_ComboAttack'"));
 	if (ComboActionMontageRef.Object)
 	{
 		ComboActionMontage = ComboActionMontageRef.Object;
@@ -23,74 +23,69 @@ AABGASCharacterPlayer::AABGASCharacterPlayer()
 	HpBar = CreateDefaultSubobject<UABGASWidgetComponent>(TEXT("Widget"));
 	HpBar->SetupAttachment(GetMesh());
 	HpBar->SetRelativeLocation(FVector(0.0f, 0.0f, 180.0f));
-
 	static ConstructorHelpers::FClassFinder<UUserWidget> HpBarWidgetRef(TEXT("/Game/ArenaBattle/UI/WBP_HpBar.WBP_HpBar_C"));
-
-	if(HpBarWidgetRef.Class)
+	if (HpBarWidgetRef.Class)
 	{
 		HpBar->SetWidgetClass(HpBarWidgetRef.Class);
 		HpBar->SetWidgetSpace(EWidgetSpace::Screen);
-		HpBar->SetDrawSize(FVector2D(200.0f, 20.0f));
+		HpBar->SetDrawSize(FVector2D(200.0f, 20.f));
 		HpBar->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponMeshRef(TEXT("/Script/Engine.SkeletalMesh'/Game/InfinityBladeWeapons/Weapons/Blunt/Blunt_Hellhammer/SK_Blunt_HellHammer.SK_Blunt_HellHammer'"));
-
-	if(WeaponMeshRef.Object)
+	if (WeaponMeshRef.Object)
 	{
 		WeaponMesh = WeaponMeshRef.Object;
 	}
 
-	WeaponRange = 75.0f;
+	WeaponRange = 75.f;
 	WeaponAttackRate = 100.0f;
 
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> SkillActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattle/Animation/AM_SkillAttack.AM_SkillAttack'"));
-
-	if(SkillActionMontageRef.Object)
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> SKillActionMontageRef(TEXT("/Script/Engine.AnimMontage'/Game/ArenaBattleGAS/Animation/AM_SkillAttack.AM_SkillAttack'"));
+	if (SKillActionMontageRef.Object)
 	{
-		SkillActionMontage = SkillActionMontageRef.Object;
+		SkillActionMontage = SKillActionMontageRef.Object;
 	}
 }
 
 UAbilitySystemComponent* AABGASCharacterPlayer::GetAbilitySystemComponent() const
 {
-	return AbilitySystemComponent;
+	return ASC;
 }
 
 void AABGASCharacterPlayer::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	AABGASPlayerState* ABGASPlayerState = GetPlayerState<AABGASPlayerState>();
-
-	if(ABGASPlayerState)
+	AABGASPlayerState* GASPS = GetPlayerState<AABGASPlayerState>();
+	if (GASPS)
 	{
-		AbilitySystemComponent = ABGASPlayerState->GetAbilitySystemComponent();
-		AbilitySystemComponent->InitAbilityActorInfo(ABGASPlayerState, this);
+		ASC = GASPS->GetAbilitySystemComponent();
+		ASC->InitAbilityActorInfo(GASPS, this);
 
-		AbilitySystemComponent->GenericGameplayEventCallbacks.FindOrAdd(ABTAG_EVENT_CHARACTER_WEAPONEQUIP).AddUObject(this, &ThisClass::EquipWeapon);
-		AbilitySystemComponent->GenericGameplayEventCallbacks.FindOrAdd(ABTAG_EVENT_CHARACTER_WEAPONUNEQUIP).AddUObject(this, &ThisClass::UnEquipWeapon);
+		ASC->GenericGameplayEventCallbacks.FindOrAdd(ABTAG_EVENT_CHARACTER_WEAPONEQUIP).AddUObject(this, &AABGASCharacterPlayer::EquipWeapon);
+		ASC->GenericGameplayEventCallbacks.FindOrAdd(ABTAG_EVENT_CHARACTER_WEAPONUNEQUIP).AddUObject(this, &AABGASCharacterPlayer::UnequipWeapon);
 
-		const UABCharacterAttributeSet *AttributeSet = AbilitySystemComponent->GetSet<UABCharacterAttributeSet>();
-		if(AttributeSet)
+		const UABCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UABCharacterAttributeSet>();
+		if (CurrentAttributeSet)
 		{
-			AttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
+			CurrentAttributeSet->OnOutOfHealth.AddDynamic(this, &ThisClass::OnOutOfHealth);
 		}
-		
-		for(const auto& StartAbility : StartAbilities)
+
+		for (const auto& StartAbility : StartAbilities)
 		{
 			FGameplayAbilitySpec StartSpec(StartAbility);
-			AbilitySystemComponent->GiveAbility(StartSpec);
+			ASC->GiveAbility(StartSpec);
 		}
 
-		for(const auto& StartInputAbility : StartInputAbilities)
+		for (const auto& StartInputAbility : StartInputAbilities)
 		{
 			FGameplayAbilitySpec StartSpec(StartInputAbility.Value);
 			StartSpec.InputID = StartInputAbility.Key;
-			AbilitySystemComponent->GiveAbility(StartSpec);
+			ASC->GiveAbility(StartSpec);
 		}
 
-		SetUpGASInputComponent();
+		SetupGASInputComponent();
 
 		APlayerController* PlayerController = CastChecked<APlayerController>(NewController);
 		PlayerController->ConsoleCommand(TEXT("showdebug abilitysystem"));
@@ -101,56 +96,48 @@ void AABGASCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	SetUpGASInputComponent();
+	SetupGASInputComponent();
 }
 
-void AABGASCharacterPlayer::SetUpGASInputComponent()
+void AABGASCharacterPlayer::SetupGASInputComponent()
 {
-	if(IsValid(AbilitySystemComponent) && IsValid(InputComponent))
+	if (IsValid(ASC) && IsValid(InputComponent))
 	{
 		UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AABGASCharacterPlayer::GASInputPressed, 0);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AABGASCharacterPlayer::GASInputPressed, 1);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AABGASCharacterPlayer::GASInputReleased, 0);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &AABGASCharacterPlayer::GASInputPressed, 1);
 		EnhancedInputComponent->BindAction(SkillAction, ETriggerEvent::Triggered, this, &AABGASCharacterPlayer::GASInputPressed, 2);
 	}
 }
 
-void AABGASCharacterPlayer::GASInputPressed(int32 InputID)
+void AABGASCharacterPlayer::GASInputPressed(int32 InputId)
 {
-	FGameplayAbilitySpec* Spec = AbilitySystemComponent->FindAbilitySpecFromInputID(InputID);
-
-	if(Spec)
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId);
+	if (Spec)
 	{
 		Spec->InputPressed = true;
-
-		if(Spec->IsActive())
+		if (Spec->IsActive())
 		{
-			AbilitySystemComponent->AbilitySpecInputPressed(*Spec);
+			ASC->AbilitySpecInputPressed(*Spec);
 		}
 		else
 		{
-			AbilitySystemComponent->TryActivateAbility(Spec->Handle);
+			ASC->TryActivateAbility(Spec->Handle);
 		}
 	}
 }
 
-void AABGASCharacterPlayer::GASInputReleased(int32 InputID)
+void AABGASCharacterPlayer::GASInputReleased(int32 InputId)
 {
-	FGameplayAbilitySpec* Spec = AbilitySystemComponent->FindAbilitySpecFromInputID(InputID);
-
-	if(Spec)
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(InputId);
+	if (Spec)
 	{
 		Spec->InputPressed = false;
-
-		if(Spec->IsActive())
+		if (Spec->IsActive())
 		{
-			AbilitySystemComponent->AbilitySpecInputReleased(*Spec);
-		}
-		else
-		{
-			AbilitySystemComponent->TryActivateAbility(Spec->Handle);
+			ASC->AbilitySpecInputReleased(*Spec);
 		}
 	}
 }
@@ -162,43 +149,43 @@ void AABGASCharacterPlayer::OnOutOfHealth()
 
 void AABGASCharacterPlayer::EquipWeapon(const FGameplayEventData* EventData)
 {
-	if(Weapon)
+	if (Weapon)
 	{
 		Weapon->SetSkeletalMesh(WeaponMesh);
 
-		FGameplayAbilitySpec NewSKillSpec(SkillAbilityClass);
-		NewSKillSpec.InputID = 2;
+		FGameplayAbilitySpec NewSkillSpec(SkillAbilityClass);
+		NewSkillSpec.InputID = 2;
 
-		if(!AbilitySystemComponent->FindAbilitySpecFromClass(SkillAbilityClass))
+		if (!ASC->FindAbilitySpecFromClass(SkillAbilityClass))
 		{
-			AbilitySystemComponent->GiveAbility(NewSKillSpec);
+			ASC->GiveAbility(NewSkillSpec);
 		}
 
-		const float CurrentAttackRange = AbilitySystemComponent->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute());
-		const float CurrentAttackRate = AbilitySystemComponent->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute());
+		const float CurrentAttackRange = ASC->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute());
+		const float CurrentAttackRate = ASC->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute());
 
-		AbilitySystemComponent->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute(), CurrentAttackRange + WeaponRange);
-		AbilitySystemComponent->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute(), CurrentAttackRate + WeaponAttackRate);
+		ASC->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute(), CurrentAttackRange + WeaponRange);
+		ASC->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute(), CurrentAttackRate + WeaponAttackRate);
 	}
 }
 
-void AABGASCharacterPlayer::UnEquipWeapon(const FGameplayEventData* EventData)
+void AABGASCharacterPlayer::UnequipWeapon(const FGameplayEventData* EventData)
 {
-	if(Weapon)
+	if (Weapon)
 	{
-		Weapon->SetSkeletalMesh(nullptr);
+		const float CurrentAttackRange = ASC->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute());
+		const float CurrentAttackRate = ASC->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute());
 
-		const float CurrentAttackRange = AbilitySystemComponent->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute());
-		const float CurrentAttackRate = AbilitySystemComponent->GetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute());
+		ASC->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute(), CurrentAttackRange - WeaponRange);
+		ASC->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute(), CurrentAttackRate - WeaponAttackRate);
 
-		AbilitySystemComponent->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRangeAttribute(), CurrentAttackRange - WeaponRange);
-		AbilitySystemComponent->SetNumericAttributeBase(UABCharacterAttributeSet::GetAttackRateAttribute(), CurrentAttackRate - WeaponAttackRate);
-
-		FGameplayAbilitySpec* SkillAbilitySpec = AbilitySystemComponent->FindAbilitySpecFromClass(SkillAbilityClass);
-
-		if(SkillAbilitySpec)
+		FGameplayAbilitySpec* SkillAbilitySpec = ASC->FindAbilitySpecFromClass(SkillAbilityClass);
+		if (SkillAbilitySpec)
 		{
-			AbilitySystemComponent->ClearAbility(SkillAbilitySpec->Handle);
+			ASC->ClearAbility(SkillAbilitySpec->Handle);
 		}
+
+		Weapon->SetSkeletalMesh(nullptr);
 	}
+
 }

@@ -6,7 +6,6 @@
 #include "Abilities/GameplayAbility.h"
 #include "ABGA_Attack.generated.h"
 
-class UABComboActionData;
 /**
  * 
  */
@@ -14,18 +13,15 @@ UCLASS()
 class ARENABATTLEGAS_API UABGA_Attack : public UGameplayAbility
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABGA_Attack();
 
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
-	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
-
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-
 	virtual void InputPressed(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
+	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
 	UFUNCTION()
@@ -40,7 +36,7 @@ protected:
 
 protected:
 	UPROPERTY()
-	TObjectPtr<UABComboActionData> CurrentComboData;
+	TObjectPtr<class UABComboActionData> CurrentComboData;
 
 	uint8 CurrentCombo = 0;
 	FTimerHandle ComboTimerHandle;

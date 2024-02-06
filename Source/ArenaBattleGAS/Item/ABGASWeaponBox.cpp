@@ -2,12 +2,11 @@
 
 
 #include "Item/ABGASWeaponBox.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 
-void AABGASWeaponBox::NotifyActorBeginOverlap(AActor* OtherActor)
+void AABGASWeaponBox::NotifyActorBeginOverlap(AActor* Other)
 {
-	Super::NotifyActorBeginOverlap(OtherActor);
+	Super::NotifyActorBeginOverlap(Other);
 
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OtherActor, WeaponEventTag, FGameplayEventData());
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Other, WeaponEventTag, FGameplayEventData());
 }

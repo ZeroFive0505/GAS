@@ -13,15 +13,14 @@ UCLASS()
 class ARENABATTLEGAS_API AABTA_Trace : public AGameplayAbilityTargetActor
 {
 	GENERATED_BODY()
-
+	
 public:
 	AABTA_Trace();
 
 	virtual void StartTargeting(UGameplayAbility* Ability) override;
 
 	virtual void ConfirmTargetingAndContinue() override;
-
-	FORCEINLINE void SetShowDebug(bool InShowDebug) { bShowDebug = InShowDebug; }
+	void SetShowDebug(bool InShowDebug) { bShowDebug = InShowDebug; }
 
 protected:
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData() const;

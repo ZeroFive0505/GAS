@@ -2,9 +2,9 @@
 
 
 #include "UI/ABGASHpBarUserWidget.h"
-
 #include "AbilitySystemComponent.h"
 #include "Attribute/ABCharacterAttributeSet.h"
+#include "ArenaBattleGAS.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Tag/ABGameplayTag.h"
@@ -13,24 +13,22 @@ void UABGASHpBarUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 {
 	Super::SetAbilitySystemComponent(InOwner);
 
-	if(AbilitySystemComponent)
+	if (ASC)
 	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UABCharacterAttributeSet::GetHealthAttribute()).AddUObject(this, &UABGASHpBarUserWidget::OnHealthChanged);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UABCharacterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UABGASHpBarUserWidget::OnMaxHealthChanged);
-		AbilitySystemComponent->RegisterGameplayTagEvent(ABTAG_CHARACTER_ISINVINCIBLE, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UABGASHpBarUserWidget::OnInvincibleTagChanged);
-
+		ASC->GetGameplayAttributeValueChangeDelegate(UABCharacterAttributeSet::GetHealthAttribute()).AddUObject(this, &UABGASHpBarUserWidget::OnHealthChanged);
+		ASC->GetGameplayAttributeValueChangeDelegate(UABCharacterAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &UABGASHpBarUserWidget::OnMaxHealthChanged);
+		ASC->RegisterGameplayTagEvent(ABTAG_CHARACTER_INVINSIBLE, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UABGASHpBarUserWidget::OnInvinsibleTagChanged);
 		PbHpBar->SetFillColorAndOpacity(HealthColor);
 
-		const UABCharacterAttributeSet* CurrentAttributeSet = AbilitySystemComponent->GetSet<UABCharacterAttributeSet>();
-
-		if(CurrentAttributeSet)
+		const UABCharacterAttributeSet* CurrentAttributeSet = ASC->GetSet<UABCharacterAttributeSet>();
+		if (CurrentAttributeSet)
 		{
 			CurrentHealth = CurrentAttributeSet->GetHealth();
 			CurrentMaxHealth = CurrentAttributeSet->GetMaxHealth();
 
-			if(CurrentHealth > 0.0f)
+			if (CurrentMaxHealth > 0.0f)
 			{
-				UpdateHpBar();	
+				UpdateHpBar();
 			}
 		}
 	}
@@ -48,11 +46,11 @@ void UABGASHpBarUserWidget::OnMaxHealthChanged(const FOnAttributeChangeData& Cha
 	UpdateHpBar();
 }
 
-void UABGASHpBarUserWidget::OnInvincibleTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+void UABGASHpBarUserWidget::OnInvinsibleTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
-	if(NewCount > 0)
+	if (NewCount > 0)
 	{
-		PbHpBar->SetFillColorAndOpacity(InvincibleColor);
+		PbHpBar->SetFillColorAndOpacity(InvinsibleColor);
 		PbHpBar->SetPercent(1.0f);
 	}
 	else
@@ -64,13 +62,13 @@ void UABGASHpBarUserWidget::OnInvincibleTagChanged(const FGameplayTag CallbackTa
 
 void UABGASHpBarUserWidget::UpdateHpBar()
 {
-	if(PbHpBar)
+	if (PbHpBar)
 	{
 		PbHpBar->SetPercent(CurrentHealth / CurrentMaxHealth);
 	}
 
-	if(TxtHpStat)
+	if (TxtHpStat)
 	{
-		TxtHpStat->SetText(FText::FromString(FString::Printf(TEXT("%.0f/%.0f"), CurrentHealth, CurrentMaxHealth)));
+		TxtHpStat->SetText(FText::FromString(FString::Printf(TEXT("%.0f/%0.f"), CurrentHealth, CurrentMaxHealth)));
 	}
 }

@@ -2,14 +2,15 @@
 
 
 #include "GA/TA/ABTA_Trace.h"
-
+#include "Abilities/GameplayAbility.h"
+#include "GameFramework/Character.h"
+#include "Components/CapsuleComponent.h"
+#include "Physics/ABCollision.h"
+#include "DrawDebugHelpers.h"
+#include "AbilitySystemComponent.h"
+#include "Attribute/ABCharacterAttributeSet.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "ArenaBattleGAS.h"
-#include "Abilities/GameplayAbility.h"
-#include "Attribute/ABCharacterAttributeSet.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/Character.h"
-#include "Physics/ABCollision.h"
 
 AABTA_Trace::AABTA_Trace()
 {
@@ -24,7 +25,7 @@ void AABTA_Trace::StartTargeting(UGameplayAbility* Ability)
 
 void AABTA_Trace::ConfirmTargetingAndContinue()
 {
-	if(SourceActor)
+	if (SourceActor)
 	{
 		FGameplayAbilityTargetDataHandle DataHandle = MakeTargetData();
 		TargetDataReadyDelegate.Broadcast(DataHandle);
@@ -35,22 +36,20 @@ FGameplayAbilityTargetDataHandle AABTA_Trace::MakeTargetData() const
 {
 	ACharacter* Character = CastChecked<ACharacter>(SourceActor);
 
-	UAbilitySystemComponent* AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
-	
-	if(!AbilitySystemComponent)
+	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(SourceActor);
+	if (!ASC)
 	{
-		ABGAS_LOG(LogABGAS, Error, TEXT("ASC not Found!"));
+		ABGAS_LOG(LogABGAS, Error, TEXT("ASC not found!"));
 		return FGameplayAbilityTargetDataHandle();
 	}
 
-	const UABCharacterAttributeSet* AttributeSet = AbilitySystemComponent->GetSet<UABCharacterAttributeSet>();
-
-	if(!AttributeSet)
+	const UABCharacterAttributeSet* AttributeSet = ASC->GetSet<UABCharacterAttributeSet>();
+	if (!AttributeSet)
 	{
-		ABGAS_LOG(LogABGAS, Error, TEXT("AttributeSet not Found!"));
+		ABGAS_LOG(LogABGAS, Error, TEXT("ABCharacterAttributeSet not found!"));
 		return FGameplayAbilityTargetDataHandle();
 	}
-	
+
 	FHitResult OutHitResult;
 	const float AttackRange = AttributeSet->GetAttackRange();
 	const float AttackRadius = AttributeSet->GetAttackRadius();
@@ -60,24 +59,25 @@ FGameplayAbilityTargetDataHandle AABTA_Trace::MakeTargetData() const
 	const FVector Start = Character->GetActorLocation() + Forward * Character->GetCapsuleComponent()->GetScaledCapsuleRadius();
 	const FVector End = Start + Forward * AttackRange;
 
-	bool bHitDetected = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, CCHANNEL_ABACTION, FCollisionShape::MakeSphere(AttackRadius), Params);
+	bool HitDetected = GetWorld()->SweepSingleByChannel(OutHitResult, Start, End, FQuat::Identity, CCHANNEL_ABACTION, FCollisionShape::MakeSphere(AttackRadius), Params);
 
 	FGameplayAbilityTargetDataHandle DataHandle;
-
-	if(bHitDetected)
+	if (HitDetected)
 	{
 		FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit(OutHitResult);
 		DataHandle.Add(TargetData);
 	}
 
 #if ENABLE_DRAW_DEBUG
-	if(bShowDebug)
+
+	if (bShowDebug)
 	{
 		FVector CapsuleOrigin = Start + (End - Start) * 0.5f;
-		float CapsuleHeight = AttackRange * 0.5f;
-		FColor DrawColor = bHitDetected ? FColor::Green : FColor::Red;
-		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHeight, AttackRadius, FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
+		float CapsuleHalfHeight = AttackRange * 0.5f;
+		FColor DrawColor = HitDetected ? FColor::Green : FColor::Red;
+		DrawDebugCapsule(GetWorld(), CapsuleOrigin, CapsuleHalfHeight, AttackRadius, FRotationMatrix::MakeFromZ(Forward).ToQuat(), DrawColor, false, 5.0f);
 	}
+
 #endif
 
 	return DataHandle;

@@ -13,12 +13,13 @@ UCLASS()
 class ARENABATTLEGAS_API UABGA_Rotate : public UGameplayAbility
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABGA_Rotate();
-
+	
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-	
+
 	virtual void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+
 };

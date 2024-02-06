@@ -7,7 +7,6 @@
 #include "AbilitySystemComponent.h"
 #include "ABCharacterAttributeSet.generated.h"
 
-
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
@@ -23,54 +22,54 @@ UCLASS()
 class ARENABATTLEGAS_API UABCharacterAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABCharacterAttributeSet();
 
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, AttackRange);
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, MaxAttackRange);
-	
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, AttackRadius);
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, MaxAttackRadius);
-	
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, AttackRate);
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, MaxAttackRate);
-	
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, Health);
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, MaxHealth);
-
 	ATTRIBUTE_ACCESSORS(UABCharacterAttributeSet, Damage);
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-
-	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	//virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	virtual bool PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data) override;
+	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
 	mutable FOutOfHealthDelegate OnOutOfHealth;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  AttackRange;
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  MaxAttackRange;
+	UPROPERTY(BlueprintReadOnly, Category="Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData AttackRange;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  AttackRadius;
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  MaxAttackRadius;
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData MaxAttackRange;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  AttackRate;
-	UPROPERTY(BlueprintReadOnly, Category = "Attack", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  MaxAttackRate;
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData AttackRadius;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  Health;
-	UPROPERTY(BlueprintReadOnly, Category = "Health", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  MaxHealth;
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData MaxAttackRadius;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Damage", meta = (AllowPrivateAccess = true))
-	FGameplayAttributeData  Damage;
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData AttackRate;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData MaxAttackRate;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Health", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData Health;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData MaxHealth;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attack", Meta = (AllowPrivateAccess = true))
+	FGameplayAttributeData Damage;
 
 	bool bOutOfHealth = false;
 

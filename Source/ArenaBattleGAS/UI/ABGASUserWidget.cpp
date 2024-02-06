@@ -2,18 +2,17 @@
 
 
 #include "UI/ABGASUserWidget.h"
-
 #include "AbilitySystemBlueprintLibrary.h"
 
 void UABGASUserWidget::SetAbilitySystemComponent(AActor* InOwner)
 {
-	if(IsValid(InOwner))
+	if (IsValid(InOwner))
 	{
-		AbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InOwner);
+		ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InOwner);
 	}
 }
 
 UAbilitySystemComponent* UABGASUserWidget::GetAbilitySystemComponent() const
 {
-	return AbilitySystemComponent;
+	return ASC;
 }

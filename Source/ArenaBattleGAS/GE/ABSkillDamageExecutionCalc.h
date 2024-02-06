@@ -13,7 +13,7 @@ UCLASS()
 class ARENABATTLEGAS_API UABSkillDamageExecutionCalc : public UGameplayEffectExecutionCalculation
 {
 	GENERATED_BODY()
-
+	
 public:
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

@@ -15,7 +15,7 @@ UCLASS()
 class ARENABATTLEGAS_API UABAT_JumpAndWaitForLanding : public UAbilityTask
 {
 	GENERATED_BODY()
-
+	
 public:
 	UABAT_JumpAndWaitForLanding();
 
@@ -23,7 +23,7 @@ public:
 	static UABAT_JumpAndWaitForLanding* CreateTask(UGameplayAbility* OwningAbility);
 
 	virtual void Activate() override;
-	virtual void OnDestroy(bool bInOwnerFinished) override;
+	virtual void OnDestroy(bool AbilityEnded) override;
 
 	UPROPERTY(BlueprintAssignable)
 	FJumpAndWaitForLandingDelegate OnComplete;

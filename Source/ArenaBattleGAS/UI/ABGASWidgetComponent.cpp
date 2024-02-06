@@ -2,16 +2,15 @@
 
 
 #include "UI/ABGASWidgetComponent.h"
-
-#include "ABGASUserWidget.h"
+#include "UI/ABGASUserWidget.h"
 
 void UABGASWidgetComponent::InitWidget()
 {
 	Super::InitWidget();
 
-	UABGASUserWidget* UserWidget = Cast<UABGASUserWidget>(GetWidget());
-	if(UserWidget)
+	UABGASUserWidget* GASUserWidget = Cast<UABGASUserWidget>(GetWidget());
+	if (GASUserWidget)
 	{
-		UserWidget->SetAbilitySystemComponent(GetOwner());
+		GASUserWidget->SetAbilitySystemComponent(GetOwner());
 	}
 }

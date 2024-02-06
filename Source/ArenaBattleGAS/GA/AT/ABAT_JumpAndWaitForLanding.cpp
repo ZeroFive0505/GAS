@@ -2,12 +2,10 @@
 
 
 #include "GA/AT/ABAT_JumpAndWaitForLanding.h"
-
 #include "GameFramework/Character.h"
 
 UABAT_JumpAndWaitForLanding::UABAT_JumpAndWaitForLanding()
 {
-	
 }
 
 UABAT_JumpAndWaitForLanding* UABAT_JumpAndWaitForLanding::CreateTask(UGameplayAbility* OwningAbility)
@@ -27,16 +25,17 @@ void UABAT_JumpAndWaitForLanding::Activate()
 	SetWaitingOnAvatar();
 }
 
-void UABAT_JumpAndWaitForLanding::OnDestroy(bool bInOwnerFinished)
+void UABAT_JumpAndWaitForLanding::OnDestroy(bool AbilityEnded)
 {
-	Super::OnDestroy(bInOwnerFinished);
 	ACharacter* Character = CastChecked<ACharacter>(GetAvatarActor());
 	Character->LandedDelegate.RemoveDynamic(this, &UABAT_JumpAndWaitForLanding::OnLandedCallback);
+
+	Super::OnDestroy(AbilityEnded);
 }
 
 void UABAT_JumpAndWaitForLanding::OnLandedCallback(const FHitResult& Hit)
 {
-	if(ShouldBroadcastAbilityTaskDelegates())
+	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		OnComplete.Broadcast();
 	}

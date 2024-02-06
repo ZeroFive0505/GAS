@@ -13,11 +13,11 @@ UCLASS()
 class ARENABATTLEGAS_API AABGASWeaponBox : public AABGASItemBox
 {
 	GENERATED_BODY()
+	
+protected:
+	virtual void NotifyActorBeginOverlap(AActor* Other) override;
 
 protected:
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-
-protected:
-	UPROPERTY(EditAnywhere, Category = "GAS", meta = (Categories = "Event"))
+	UPROPERTY(EditAnywhere, Category = GAS, Meta=(Categories=Event))
 	FGameplayTag WeaponEventTag;
 };
